@@ -37,6 +37,7 @@ class ImageHandler:
             raise StitchingError("2 or more Images needed for Stitching")
         self.img_names = img_names
 
+
     def resize_to_medium_resolution(self):
         return self.read_and_resize_imgs(self.medium_scaler)
 
@@ -49,7 +50,9 @@ class ImageHandler:
         return self.read_and_resize_imgs(self.final_scaler)
 
     def read_and_resize_imgs(self, scaler):
+        nr = 0
         for img, size in self.input_images():
+
             yield self.resize_img_by_scaler(scaler, size, img)
 
     def resize_imgs_by_scaler(self, imgs, scaler):

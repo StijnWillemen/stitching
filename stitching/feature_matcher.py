@@ -49,7 +49,6 @@ class FeatureMatcher:
         keypoints1 = features1.getKeypoints()
         keypoints2 = features2.getKeypoints()
         matches = match1to2.getMatches()
-
         return cv.drawMatches(
             img1, keypoints1, img2, keypoints2, matches, None, **kwargs
         )

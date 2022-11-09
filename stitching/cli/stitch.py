@@ -24,7 +24,7 @@ from stitching.timelapser import Timelapser
 from stitching.warper import Warper
 
 parser = argparse.ArgumentParser(prog="stitch.py")
-parser.add_argument("img_names", nargs="+", help="Files to stitch", type=str)
+parser.add_argument("img_names", nargs="+", help="original Files to get key features from", type=str)
 parser.add_argument(
     "--affine",
     action="store_true",
@@ -247,8 +247,8 @@ parser.add_argument(
 parser.add_argument(
     "--output",
     action="store",
-    default="result.jpg",
-    help="The default is 'result.jpg'",
+    default="charcoal_equirectangular_styled_stitched.jpg",
+    help="The default is 'charcoal_equirectangular_styled_stitched.jpg'",
     type=str,
 )
 
@@ -266,7 +266,6 @@ def main():
     preview = args_dict.pop("preview")
     output = args_dict.pop("output")
     print("stitching " + " ".join(img_names) + " into " + output)
-
     # Create Stitcher
     affine_mode = args_dict.pop("affine")
 

@@ -16,7 +16,7 @@ class TestStitcher(unittest.TestCase):
     def test_stitcher_aquaduct(self):
         stitcher = Stitcher(nfeatures=250, crop=False)
         result = stitcher.stitch(["s1.jpg", "s2.jpg"])
-        cv.imwrite("result.jpg", result)
+        cv.imwrite("charcoal_equirectangular_styled_stitched.jpg", result)
 
         max_image_shape_derivation = 3
         np.testing.assert_allclose(

@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+import cv2
+
 from .blender import Blender
 from .camera_adjuster import CameraAdjuster
 from .camera_estimator import CameraEstimator
@@ -14,6 +16,7 @@ from .stitching_error import StitchingError
 from .subsetter import Subsetter
 from .timelapser import Timelapser
 from .warper import Warper
+from .imagesplitter import imagesplitter
 
 
 class Stitcher:
@@ -87,15 +90,20 @@ class Stitcher:
     def stitch(self, img_names):
         self.initialize_registration(img_names)
         imgs = self.resize_medium_resolution()
+
         features = self.find_features(imgs)
         matches = self.match_features(features)
-        imgs, features, matches = self.subset(imgs, features, matches)
+        #Subset filters out images with low feature points
+        imgs, features, matches, styled_imgs = self.subset(imgs, features, matches)
+
         cameras = self.estimate_camera_parameters(features, matches)
         cameras = self.refine_camera_parameters(features, matches, cameras)
         cameras = self.perform_wave_correction(cameras)
         self.estimate_scale(cameras)
 
-        imgs = self.resize_low_resolution(imgs)
+
+        imgs = self.resize_low_resolution(styled_imgs)
+
         imgs, masks, corners, sizes = self.warp_low_resolution(imgs, cameras)
         self.prepare_cropper(imgs, masks, corners, sizes)
         imgs, masks, corners, sizes = self.crop_low_resolution(
@@ -104,11 +112,15 @@ class Stitcher:
         self.estimate_exposure_errors(corners, imgs, masks)
         seam_masks = self.find_seam_masks(imgs, corners, masks)
 
+        print("here 3")
+
         imgs = self.resize_final_resolution()
+
         imgs, masks, corners, sizes = self.warp_final_resolution(imgs, cameras)
         imgs, masks, corners, sizes = self.crop_final_resolution(
             imgs, masks, corners, sizes
         )
+
         self.set_masks(masks)
         imgs = self.compensate_exposure_errors(corners, imgs)
         seam_masks = self.resize_seam_masks(seam_masks)
@@ -130,7 +142,7 @@ class Stitcher:
         return self.matcher.match_features(features)
 
     def subset(self, imgs, features, matches):
-        names, sizes, imgs, features, matches = self.subsetter.subset(
+        names, sizes, imgs, features, matches, styled_imgs = self.subsetter.subset(
             self.img_handler.img_names,
             self.img_handler.img_sizes,
             imgs,
@@ -138,7 +150,8 @@ class Stitcher:
             matches,
         )
         self.img_handler.img_names, self.img_handler.img_sizes = names, sizes
-        return imgs, features, matches
+        print(len(names))
+        return imgs, features, matches, styled_imgs
 
     def estimate_camera_parameters(self, features, matches):
         return self.camera_estimator.estimate(features, matches)
