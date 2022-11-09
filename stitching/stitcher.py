@@ -112,8 +112,6 @@ class Stitcher:
         self.estimate_exposure_errors(corners, imgs, masks)
         seam_masks = self.find_seam_masks(imgs, corners, masks)
 
-        print("here 3")
-
         imgs = self.resize_final_resolution()
 
         imgs, masks, corners, sizes = self.warp_final_resolution(imgs, cameras)
@@ -183,6 +181,7 @@ class Stitcher:
         imgs = self.warper.warp_images(imgs, cameras, aspect)
         masks = self.warper.create_and_warp_masks(sizes, cameras, aspect)
         corners, sizes = self.warper.warp_rois(sizes, cameras, aspect)
+
         return imgs, masks, corners, sizes
 
     def prepare_cropper(self, imgs, masks, corners, sizes):

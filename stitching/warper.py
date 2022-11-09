@@ -49,6 +49,7 @@ class Warper:
             cv.INTER_LINEAR,
             cv.BORDER_REFLECT,
         )
+
         return warped_image
 
     def create_and_warp_masks(self, sizes, cameras, aspect=1):
